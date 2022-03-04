@@ -8,7 +8,7 @@ def fun_switcher(fun_id):
         },
         'f2': {
             'fun': f2,
-            'dimension': (2, 100),
+            'dimension_constraints': (2, 100),
             'x_range': (-100, 100),
             'accuracy': 0.0001
         }
