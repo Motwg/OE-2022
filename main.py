@@ -1,6 +1,7 @@
+import json
+
 from PSO import PSO
 from optimization_functions import OptimizationFunction
-import json
 
 
 def check_input(predicate, msg, error_string='Input does not exist'):
@@ -24,5 +25,7 @@ if __name__ == '__main__':
     pso = PSO(input_data['population'], input_data['dimension'], opt_function.x_range)
 
     # Tests (I will extract them later)
-    # print(f'{opt_function([5, 4, 3])} = 50)')
-    # print(pso(opt_function, 'iterations'))
+    print(f'{opt_function([5, 4, 3])} = 50')
+    print(pso.step(opt_function))
+    print(pso.alt_step(opt_function))
+    print(pso.evaluate(opt_function, 'iterations'))
