@@ -1,3 +1,6 @@
+import math
+
+
 def fun_switcher(fun_id):
     return {
         'f1': {

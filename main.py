@@ -22,10 +22,14 @@ if __name__ == '__main__':
     print(input_data)
 
     opt_function = OptimizationFunction(input_data['function'])
-    pso = PSO(input_data['population'], input_data['dimension'], opt_function.x_range)
+    pso = PSO(input_data['population'], input_data['dimension'], opt_function)
 
     # Tests (I will extract them later)
     print(f'{opt_function([5, 4, 3])} = 50')
-    print(pso.step(opt_function))
-    print(pso.alt_step(opt_function))
-    print(pso.evaluate(opt_function, 'iterations'))
+    print(pso.step())
+    print(pso.alt_step())
+
+    print(pso.evaluate())
+    print(pso.evaluate(iterations=50))
+    print(pso.evaluate(alternative=True))
+    print(pso.evaluate(iterations=50, alternative=True))
