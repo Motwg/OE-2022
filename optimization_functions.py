@@ -31,7 +31,7 @@ def f1(vector_x):
 def f2(vector_x):
     sum_value = 0
     for i, x in enumerate(vector_x):
-        x_i = x - i
+        x_i = x - i - 1
         sum_value += x_i * x_i
     return sum_value
 
