@@ -39,8 +39,8 @@ def test_f2(opt_funct):
 
 def test_f2_call(opt_funct):
     f = opt_funct('f2')
-    assert f([5, 4, 3]) == 35
-    assert f([1.2, 2.4, 3.4]) == pytest.approx(5.36, 0.1)
+    assert f([5, 4, 3]) == 20
+    assert f([1.2, 2.4, 3.4]) == pytest.approx(0.36, 0.1)
     assert f([]) == 0
     with pytest.raises(TypeError):
         f(3)
