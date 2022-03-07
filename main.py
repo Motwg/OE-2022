@@ -1,5 +1,6 @@
 import json
 
+from GA import GA
 from PSO import PSO
 from optimization_functions import OptimizationFunction
 
@@ -28,3 +29,10 @@ if __name__ == '__main__':
     print(pso.alt_step())
 
     print(pso.particles[0])
+
+    print('===GA===')
+    ga = GA(input_data['dimension'], opt_function, 100)
+    ga.run()
+    solution, solution_fitness = ga.best_solution()
+    print(f'Parameters of the best solution : {solution}')
+    print(f'Fitness value of the best solution = {solution_fitness}')
