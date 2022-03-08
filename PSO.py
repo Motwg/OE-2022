@@ -2,7 +2,7 @@ from random import uniform
 import math
 import sys
 
-from optimization_functions import OptimizationFunction, f1, f2, f5, f7, f10, f11, f12
+from optimization_functions import OptimizationFunction
 
 MAX_FLOAT = float('inf')
 
@@ -20,7 +20,7 @@ class PSO:
         self.particles = [{
             'v': [0] * dimension,
             # local max
-            'best_local': [0] * dimension,
+            'best_local': [uniform(*opt_function.x_range) for _ in range(dimension)],
             # actual position of particle in dimension
             'x': [uniform(*opt_function.x_range) for _ in range(dimension)]
         } for _ in range(population)]
@@ -36,75 +36,34 @@ class PSO:
         self.y = MAX_FLOAT
 
     def step(self, *args, **kwargs):
-        for pn in range(len(self.particles)):
-            cur_par = self.particles[pn]
-            par_v0 = cur_par['v']
-            par_x0 = cur_par['x']
-            best_local = cur_par['best_local']
-            for d in range(0, self.dimensions):
-                v_d = par_v0[d]
-                x_d = par_x0[d]
-                bl_d = best_local[d]
-                c1 = 1.494
-                c2 = c1
-                r1 = uniform(0, 1)
-                r2 = uniform(0, 1)
+        for pn in self.particles:
+            for d in range(self.dimensions):
                 # Calculate new velocity
-                v = self.w_v*v_d + c1*r1*(bl_d - x_d) + c2*r2*(self.best_global[d] - x_d)
-                self.particles[pn]['v'][d] = v
+                v = self.w_v * pn['v'][d] \
+                    + 1.494 * uniform(0, 1) * (pn['best_local'][d] - pn['x'][d]) \
+                    + 1.494 * uniform(0, 1) * (self.best_global[d] - pn['x'][d])
+                pn['v'][d] = v
 
                 # Check for edge
-                new_x_d = x_d + v
+                new_x_d = pn['x'][d] + v
                 if new_x_d < self.opt_fun.x_range[0]:
                     new_x_d = self.opt_fun.x_range[0]
-                if new_x_d < self.opt_fun.x_range[1]:
+                if new_x_d > self.opt_fun.x_range[1]:
                     new_x_d = self.opt_fun.x_range[1]
 
                 # Change position
-                self.particles[pn]['x'][d] = new_x_d
+                pn['x'][d] = new_x_d
 
             # Calculate global and local best
-            f_value = 0
-            best_local_val = 0
-            best_global_val = 0
-            if self.opt_fun == 'f1':
-                f_value = f1(self.particles[pn]['x'])
-                best_local_val = f1(self.particles[pn]['best_local'])
-                best_global_val = f1(self.best_global)
-            elif self.opt_fun == 'f2':
-                f_value = f2(self.particles[pn]['x'])
-                best_local_val = f1(self.particles[pn]['best_local'])
-                best_global_val = f1(self.best_global)
-            elif self.opt_fun == 'f5':
-                f_value = f5(self.particles[pn]['x'])
-                best_local_val = f1(self.particles[pn]['best_local'])
-                best_global_val = f1(self.best_global)
-            elif self.opt_fun == 'f7':
-                f_value = f7(self.particles[pn]['x'])
-                best_local_val = f1(self.particles[pn]['best_local'])
-                best_global_val = f1(self.best_global)
-            elif self.opt_fun == 'f10':
-                f_value = f10(self.particles[pn]['x'])
-                best_local_val = f1(self.particles[pn]['best_local'])
-                best_global_val = f1(self.best_global)
-            elif self.opt_fun == 'f11':
-                f_value = f11(self.particles[pn]['x'])
-                best_local_val = f1(self.particles[pn]['best_local'])
-                best_global_val = f1(self.best_global)
-            elif self.opt_fun == 'f12':
-                f_value = f12(self.particles[pn]['x'])
-                best_local_val = f1(self.particles[pn]['best_local'])
-                best_global_val = f1(self.best_global)
-            else:
-                print('No such function')
+            f_value = self.opt_fun(pn['x'])
+            best_local_val = self.opt_fun(pn['best_local'])
+            best_global_val = self.y
 
             # Check if value is new local or global minimum
             if f_value < best_global_val:
-                self.best_global = f_value
+                self.best_global = pn['x']
             if f_value < best_local_val:
-                self.particles[pn]['best_local'] = f_value
-
-        return
+                pn['best_local'] = pn['x']
 
     def alt_step(self, *args, **kwargs):
         # TODO: AL - implement own equation modification

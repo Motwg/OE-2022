@@ -23,7 +23,7 @@ def fun_switcher(fun_id):
         },
         'f7': {
             'fun': f7,
-            'dimension_constraints': [2],
+            'dimension_constraints': (2, 2),
             'x_range': (-10, 10),
             'accuracy': 0.000001
         },
@@ -41,7 +41,7 @@ def fun_switcher(fun_id):
         },
         'f12': {
             'fun': f12,
-            'dimension_constraints': [2],
+            'dimension_constraints': (2, 2),
             'x_range': (-100, 100),
             'accuracy': 0.00001
         }
