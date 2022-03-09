@@ -4,7 +4,7 @@ import sys
 
 from optimization_functions import OptimizationFunction
 
-MIN_INT = -sys.maxsize - 1
+MAX_FLOAT = float('inf')
 
 
 class PSO:
@@ -20,7 +20,7 @@ class PSO:
         self.particles = [{
             'v': [0] * dimension,
             # local max
-            'best_local': [0] * dimension,
+            'best_local': [uniform(*opt_function.x_range) for _ in range(dimension)],
             # actual position of particle in dimension
             'x': [uniform(*opt_function.x_range) for _ in range(dimension)]
         } for _ in range(population)]
@@ -32,15 +32,38 @@ class PSO:
         self.w_global = w[2]
 
         self.opt_fun = opt_function
-        self.y = MIN_INT
+        self.dimensions = dimension
+        self.y = MAX_FLOAT
 
     def step(self, *args, **kwargs):
-        # TODO: AL - implement standard equation listed below
-        # v ← ω_v * v + φl*w_l(best_l - x) + φg*w_g(best_g - x)
-        # φl and φg are some random variables - for now should be omitted
-        # accuracy and x_range can be get via function.accuracy and function.x_range
-        # remember that x values can't be lower/greater than x_range
-        pass
+        for pn in self.particles:
+            for d in range(self.dimensions):
+                # Calculate new velocity
+                v = self.w_v * pn['v'][d] \
+                    + 1.494 * uniform(0, 1) * (pn['best_local'][d] - pn['x'][d]) \
+                    + 1.494 * uniform(0, 1) * (self.best_global[d] - pn['x'][d])
+                pn['v'][d] = v
+
+                # Check for edge
+                new_x_d = pn['x'][d] + v
+                if new_x_d < self.opt_fun.x_range[0]:
+                    new_x_d = self.opt_fun.x_range[0]
+                if new_x_d > self.opt_fun.x_range[1]:
+                    new_x_d = self.opt_fun.x_range[1]
+
+                # Change position
+                pn['x'][d] = new_x_d
+
+            # Calculate global and local best
+            f_value = self.opt_fun(pn['x'])
+            best_local_val = self.opt_fun(pn['best_local'])
+            best_global_val = self.y
+
+            # Check if value is new local or global minimum
+            if f_value < best_global_val:
+                self.best_global = pn['x']
+            if f_value < best_local_val:
+                pn['best_local'] = pn['x']
 
     def alt_step(self, *args, **kwargs):
         # TODO: AL - implement own equation modification
