@@ -12,7 +12,7 @@ def test_pso(sum_opt_funct):
     assert len(pso.best_global) == dimension
     assert callable(pso.opt_fun)
     for _ in range(20):
-        assert random.uniform(-1e10, 1e10) >= pso.y
+        assert random.uniform(-1e10, 1e10) <= pso.y
     for particle in pso.particles:
         assert isinstance(particle['v'], list)
         assert len(particle['v']) == dimension
