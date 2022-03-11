@@ -6,7 +6,7 @@
     },
     "pso_02": {
         "function": "f1",
-        "population": 20,
-        "dimension": 4
+        "population": 60,
+        "dimension": 3
     }
 }

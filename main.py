@@ -25,10 +25,11 @@ if __name__ == '__main__':
     opt_function = OptimizationFunction(input_data['function'])
     pso = PSO(input_data['population'], input_data['dimension'], opt_function)
 
-    print(pso.step())
-    print(pso.alt_step())
-
-    print(pso.particles[0])
+    for i in range(10):
+        print(f'Step {i}')
+        pso.step()
+        print(f'Best solution {pso.y} for {pso.best_global}')
+        print(pso.particles[0])
 
     print('===GA===')
     ga = GA(input_data['dimension'], opt_function, 100)
