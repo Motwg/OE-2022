@@ -38,7 +38,6 @@ class PSO:
         self.y = MAX_FLOAT
 
     def step(self, *args, **kwargs):
-        print(self.particles[0])
         for pn in self.particles:
             for d in range(self.dimensions):
                 # Calculate new velocity
