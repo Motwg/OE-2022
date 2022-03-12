@@ -37,3 +37,88 @@ def test_pso_evaluate(sum_opt_funct):
     assert -20 <= pso.evaluate(iterations=50) <= 20
     assert -20 <= pso.evaluate(alternative=True) <= 20
     assert -20 <= pso.evaluate(iterations=50, alternative=True) <= 20
+
+
+def test_pso_step_sum(sum_opt_funct):
+    pso = PSO(100, 2, sum_opt_funct)
+    best_solution_x = None
+    best_solution_y = float('inf')
+    for _ in range(30):
+        pso.step()
+        # each next solution y should be less and x should be different
+        if pso.y != best_solution_y:
+            assert pso.y < best_solution_y
+            assert pso.best_global != best_solution_x
+        best_solution_y = pso.y
+        best_solution_x = pso.best_global.copy()
+
+
+def test_pso_step_f1(f1_opt_funct):
+    pso = PSO(200, 2, f1_opt_funct)
+    best_solution_x = None
+    best_solution_y = float('inf')
+    for _ in range(20):
+        pso.step()
+        # each next solution y should be less and x should be different
+        if pso.y != best_solution_y:
+            assert pso.y < best_solution_y
+            assert pso.best_global != best_solution_x
+        best_solution_y = pso.y
+        best_solution_x = pso.best_global.copy()
+
+
+def test_pso_step_f1_1particle(f1_opt_funct):
+    pso = PSO(1, 5, f1_opt_funct)
+    best_solution_x = None
+    best_solution_y = float('inf')
+    for _ in range(100):
+        pso.step()
+        # each next solution y should be less and x should be different
+        if pso.y != best_solution_y:
+            assert pso.particles[0]['best_local'] == pso.best_global
+            assert pso.y < best_solution_y
+            assert pso.best_global != best_solution_x
+        best_solution_y = pso.y
+        best_solution_x = pso.best_global.copy()
+
+
+def test_pso_alt_step_sum(sum_opt_funct):
+    pso = PSO(100, 2, sum_opt_funct)
+    best_solution_x = None
+    best_solution_y = float('inf')
+    for _ in range(30):
+        pso.alt_step()
+        # each next solution y should be less and x should be different
+        if pso.y != best_solution_y:
+            assert pso.y < best_solution_y
+            assert pso.best_global != best_solution_x
+        best_solution_y = pso.y
+        best_solution_x = pso.best_global.copy()
+
+
+def test_pso_alt_step_f1(f1_opt_funct):
+    pso = PSO(200, 2, f1_opt_funct)
+    best_solution_x = None
+    best_solution_y = float('inf')
+    for _ in range(20):
+        pso.alt_step()
+        # each next solution y should be less and x should be different
+        if pso.y != best_solution_y:
+            assert pso.y < best_solution_y
+            assert pso.best_global != best_solution_x
+        best_solution_y = pso.y
+        best_solution_x = pso.best_global.copy()
+
+
+def test_pso_alt_step_f1_1particle(f1_opt_funct):
+    pso = PSO(1, 5, f1_opt_funct)
+    best_solution_x = None
+    best_solution_y = float('inf')
+    for _ in range(100):
+        pso.alt_step()
+        # each next solution y should be less and x should be different
+        if pso.y != best_solution_y:
+            assert pso.y < best_solution_y
+            assert pso.best_global != best_solution_x
+        best_solution_y = pso.y
+        best_solution_x = pso.best_global.copy()
