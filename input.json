@@ -8,5 +8,10 @@
         "function": "f1",
         "population": 60,
         "dimension": 3
+    },
+    "pso_03": {
+        "function": "f1",
+        "population": 1000,
+        "dimension": 2
     }
 }

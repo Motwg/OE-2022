@@ -69,12 +69,18 @@ class PSO:
                 pn['best_local'] = pn['x'].copy()
 
     def alt_step(self, *args, **kwargs):
+        avg_diff = [0] * self.dimensions
+        for d in range(self.dimensions):
+            for pn in self.particles:
+                avg_diff[d] += self.best_global[d] - pn['x'][d]
+            avg_diff[d] /= len(self.particles)
+
         for pn in self.particles:
             for d in range(self.dimensions):
                 # Calculate new velocity
                 v = self.w_v * pn['v'][d] \
-                    + (self.w_l * uniform(0, 1) * (pn['best_local'][d] - pn['x'][d])**2
-                       + self.w_g * uniform(0, 1) * (self.best_global[d] - pn['x'][d])**2)**0.5
+                    + self.w_l * uniform(0, 1) * (pn['best_local'][d] - pn['x'][d]) \
+                    + self.w_g * uniform(0, 1) * (avg_diff[d] - pn['x'][d])
                 pn['v'][d] = v
 
                 # Check for edge
