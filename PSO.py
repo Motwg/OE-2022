@@ -73,8 +73,8 @@ class PSO:
             for d in range(self.dimensions):
                 # Calculate new velocity
                 v = self.w_v * pn['v'][d] \
-                    + self.w_l * uniform(0, 1) * ((pn['best_local'][d] - pn['x'][d])**2)**0.5 \
-                    + self.w_g * uniform(0, 1) * ((self.best_global[d] - pn['x'][d])**2)**0.5
+                    + (self.w_l * uniform(0, 1) * (pn['best_local'][d] - pn['x'][d])**2
+                       + self.w_g * uniform(0, 1) * (self.best_global[d] - pn['x'][d])**2)**0.5
                 pn['v'][d] = v
 
                 # Check for edge
