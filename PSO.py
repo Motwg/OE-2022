@@ -69,8 +69,41 @@ class PSO:
                 pn['best_local'] = pn['x'].copy()
 
     def alt_step(self, *args, **kwargs):
-        # TODO: AL - implement own equation modification
-        pass
+        avg_diff = [0] * self.dimensions
+        for d in range(self.dimensions):
+            for pn in self.particles:
+                avg_diff[d] += self.best_global[d] - pn['x'][d]
+            avg_diff[d] /= len(self.particles)
+
+        for pn in self.particles:
+            for d in range(self.dimensions):
+                # Calculate new velocity
+                v = self.w_v * pn['v'][d] \
+                    + self.w_l * uniform(0, 1) * (pn['best_local'][d] - pn['x'][d]) \
+                    + self.w_g * uniform(0, 1) * (avg_diff[d] - pn['x'][d])
+                pn['v'][d] = v
+
+                # Check for edge
+                new_x_d = pn['x'][d] + v
+                if new_x_d < self.opt_fun.x_range[0]:
+                    new_x_d = self.opt_fun.x_range[0]
+                if new_x_d > self.opt_fun.x_range[1]:
+                    new_x_d = self.opt_fun.x_range[1]
+
+                # Change position
+                pn['x'][d] = new_x_d
+
+            # Calculate new value
+            f_value = self.opt_fun(pn['x'])
+
+            # Check if value is new global minimum
+            if f_value < self.y:
+                self.best_global = pn['x'].copy()
+                self.y = f_value
+
+            # Check if value is new local minimum
+            if f_value < self.opt_fun(pn['best_local']):
+                pn['best_local'] = pn['x'].copy()
 
     def evaluate(self, iterations=None, alternative=False, *args, **kwargs):
         # accuracy mode
