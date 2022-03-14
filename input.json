@@ -13,5 +13,41 @@
         "function": "f1",
         "population": 1000,
         "dimension": 2
+    },
+    "pso_a": {
+        "function": "f1",
+        "population": 1000,
+        "dimension": 20
+    },
+    "pso_b": {
+        "function": "f2",
+        "population": 1000,
+        "dimension": 20
+    },
+    "pso_c": {
+        "function": "f1",
+        "population": 1000,
+        "dimension": 20
+    },
+    "pso_d": {
+        "function": "f10",
+        "population": 1000,
+        "dimension": 20
+    },
+    "pso_e": {
+        "function": "f10",
+        "population": 1000,
+        "dimension": 20,
+        "alternative": true
+    },
+    "pso_f": {
+        "function": "f12",
+        "population": 1000,
+        "dimension": 2
+    },
+    "pso_g": {
+        "function": "f12",
+        "population": 1000,
+        "dimension": 2
     }
 }

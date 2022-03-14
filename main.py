@@ -23,17 +23,34 @@ if __name__ == '__main__':
     print(input_data)
 
     opt_function = OptimizationFunction(input_data['function'])
-    pso = PSO(input_data['population'], input_data['dimension'], opt_function)
+    # set a)
+    # pso = PSO(input_data['population'], input_data['dimension'], opt_function)
+    # set b)
+    pso = PSO(input_data['population'], input_data['dimension'], opt_function,
+              w_v=0.6,
+              w_g=1.7,
+              w_l=1.7
+              )
 
-    for i in range(10):
-        print(f'Step {i}')
-        pso.step()
+    y = []
+    repeats = 10
+    for i in range(repeats):
+        print(f'===REPEAT {i + 1}===')
+
+        # accuracy
+        y.append(pso.evaluate())
+
+        # iterative with modification
+        # y.append(pso.evaluate(iterations=1000, alternative=True))
+
         print(f'Best solution {pso.y} for {pso.best_global}')
-        print(pso.particles[0])
+        print(pso.logs)
+        pso.reset()
+    print(f'Average best solution: {sum(y) / repeats}')
 
-    print('===GA===')
-    ga = GA(input_data['dimension'], opt_function, 100)
-    ga.run()
-    solution, solution_fitness = ga.best_solution()
-    print(f'Parameters of the best solution : {solution}')
-    print(f'Fitness value of the best solution = {solution_fitness}')
+    # print('===GA===')
+    # ga = GA(input_data['dimension'], opt_function, 100)
+    # ga.run()
+    # solution, solution_fitness = ga.best_solution()
+    # print(f'Parameters of the best solution : {solution}')
+    # print(f'Fitness value of the best solution = {solution_fitness}')
