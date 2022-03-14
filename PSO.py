@@ -125,7 +125,6 @@ class PSO:
                 else:
                     self.step()
                 logs_y.append(self.y)
-                print(self.y)
                 if 0 < math.fabs(self.y - y) <= self.opt_fun.accuracy:
                     self.logs['iterations'] = i
                     break
