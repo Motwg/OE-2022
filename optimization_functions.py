@@ -62,8 +62,8 @@ def f2(vector_x):
 
 def f5(vector_x):
     sum_value = 0
-    for x in enumerate(vector_x):
-        sum_value += (x * x) - 10 * math.cos(2 * math.pi * x) + 10
+    for x in vector_x:
+        sum_value += x * x - 10 * math.cos(2 * math.pi * x) + 10
     return sum_value
 
 
@@ -76,12 +76,12 @@ def f7(vector_x):
 
 
 def f10(vector_x):
-    sum = 0
+    abs_sum = 0
     product = 1
-    for x in enumerate(vector_x):
-        sum += abs(x) * abs(x)
+    for x in vector_x:
+        abs_sum += abs(x) * abs(x)
         product *= abs(x)
-    return sum + product
+    return abs_sum + product
 
 
 def f11(vector_x):
