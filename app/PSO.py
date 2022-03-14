@@ -1,16 +1,15 @@
 from random import uniform
 import math
-import sys
 
-from optimization_functions import OptimizationFunction
+from app.optimization_functions import OptimizationFunction
 
 MAX_FLOAT = float('inf')
 
 
 def call_w(w):
-    """if 'w' looks like [function, *args] call function with args"""
-    if isinstance(w, (tuple, list)) and callable(w[0]):
-        return w[0](*w[1:])
+    """if 'w' looks like [*args] call uniform with args"""
+    if isinstance(w, (tuple, list)):
+        return uniform(*w)
     return w
 
 
@@ -122,9 +121,14 @@ class PSO:
                 else:
                     self.step()
                 logs_y.append(self.y)
-                if 0 < math.fabs(self.y - y) <= self.opt_fun.accuracy:
+                # 10 last solutions are equal => break
+                if 0 < math.fabs(self.y - y) <= self.opt_fun.accuracy \
+                        or len(logs_y) > 10 \
+                        and all(logs_y[-1] == log_y for log_y in logs_y[-10:]):
                     self.logs['iterations'] = i
                     break
+            else:
+                self.logs['iterations'] = 10000
 
         # iteration mode
         elif isinstance(iterations, int) and iterations > 0:

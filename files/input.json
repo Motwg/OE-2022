@@ -1,0 +1,80 @@
+{
+    "settings": {
+        "auto": true,
+        "save_csv_summary": true,
+        "save_csv_details": false,
+        "repeats": 10,
+        "inputs": [
+            "pso_a",
+            "pso_b",
+            "pso_d"
+        ]
+    },
+    "w_parameters": {
+        "a": {
+            "w_v": 0.729,
+            "w_g": 1.494,
+            "w_l": 1.494
+        },
+        "b": {
+            "w_v": 0.6,
+            "w_g": 1.7,
+            "w_l": 1.7
+        },
+        "c": {
+            "w_v": [0.4, 0.9],
+            "w_g": [0.5, 2.5],
+            "w_l": [0.5, 2.5]
+        }
+    },
+    "pso_01": {
+        "function": "f1",
+        "population": 20,
+        "dimension": 2,
+        "w_set": "a"
+    },
+    "pso_a": {
+        "function": "f1",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a"
+    },
+    "pso_b": {
+        "function": "f2",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "b"
+    },
+    "pso_c": {
+        "function": "f1",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "c"
+    },
+    "pso_d": {
+        "function": "f10",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a"
+    },
+    "pso_e": {
+        "function": "f10",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a",
+        "alternative": true
+    },
+    "pso_f": {
+        "function": "f12",
+        "population": 50,
+        "dimension": 2,
+        "w_set": "a",
+        "iterations": 400
+    },
+    "pso_g": {
+        "function": "f12",
+        "population": 50,
+        "dimension": 2,
+        "w_set": "a"
+    }
+}

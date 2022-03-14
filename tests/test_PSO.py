@@ -1,6 +1,6 @@
 import random
 import pytest
-from PSO import PSO
+from app.PSO import PSO
 
 
 def test_pso(sum_opt_funct):
