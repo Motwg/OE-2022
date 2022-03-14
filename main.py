@@ -23,12 +23,30 @@ if __name__ == '__main__':
     print(input_data)
 
     opt_function = OptimizationFunction(input_data['function'])
-    pso = PSO(input_data['population'], input_data['dimension'], opt_function)
+    # set a)
+    # pso = PSO(input_data['population'], input_data['dimension'], opt_function)
+    # set b)
+    pso = PSO(input_data['population'], input_data['dimension'], opt_function,
+              w_v=0.6,
+              w_g=1.7,
+              w_l=1.7
+              )
 
-    # pso.evaluate(iterations=100, alternative=True)
-    pso.evaluate()
-    print(f'Best solution {pso.y} for {pso.best_global}')
-    print(pso.logs)
+    y = []
+    repeats = 10
+    for i in range(repeats):
+        print(f'===REPEAT {i + 1}===')
+
+        # accuracy
+        y.append(pso.evaluate())
+
+        # iterative with modification
+        # y.append(pso.evaluate(iterations=1000, alternative=True))
+
+        print(f'Best solution {pso.y} for {pso.best_global}')
+        print(pso.logs)
+        pso.reset()
+    print(f'Average best solution: {sum(y) / repeats}')
 
     # print('===GA===')
     # ga = GA(input_data['dimension'], opt_function, 100)

@@ -23,18 +23,8 @@ class PSO:
                 or opt_function.dimension_constraints[1] < dimension:
             raise Exception(f'Given dimension is out of boundaries: '
                             f'{dimension} not in {opt_function.dimension_constraints}')
-
-        self.particles = [{
-            'v': [0] * dimension,
-            # actual position of particle in dimension
-            'x': [uniform(*opt_function.x_range) for _ in range(dimension)]
-        } for _ in range(population)]
-
-        # local max
-        for p in self.particles:
-            p['best_local'] = p['x'].copy()
-        # global max
-        self.best_global = self.particles[0]['x'].copy()
+        self.particles = {}
+        self.best_global = []
 
         self.w_v = kwargs.get('w_v', 0.729)
         self.w_l = kwargs.get('w_l', 1.494)
@@ -42,9 +32,12 @@ class PSO:
 
         self.opt_fun = opt_function
         self.dimensions = dimension
+        self.population = population
         self.y = MAX_FLOAT
 
         self.logs = {}
+
+        self.reset()
 
     def step(self, *args, **kwargs):
         for pn in self.particles:
@@ -144,3 +137,20 @@ class PSO:
         self.logs['avg_y'] = sum(logs_y) / len(self.particles)
         self.logs['y'] = tuple(logs_y)
         return self.y
+
+    def reset(self):
+        self.particles = [{
+            'v': [0] * self.dimensions,
+            # actual position of particle in dimension
+            'x': [uniform(*self.opt_fun.x_range) for _ in range(self.dimensions)]
+        } for _ in range(self.population)]
+
+        # local max
+        for p in self.particles:
+            p['best_local'] = p['x'].copy()
+        # global max
+        self.best_global = self.particles[0]['x'].copy()
+
+        self.y = MAX_FLOAT
+
+        self.logs = {}
