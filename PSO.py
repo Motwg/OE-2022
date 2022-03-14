@@ -51,9 +51,11 @@ class PSO:
                 # Check for edge
                 new_x_d = pn['x'][d] + v
                 if new_x_d < self.opt_fun.x_range[0]:
-                    new_x_d = self.opt_fun.x_range[0]
+                    new_x_d -= self.opt_fun.x_range[0]
+                    pn['v'][d] = -v
                 if new_x_d > self.opt_fun.x_range[1]:
-                    new_x_d = self.opt_fun.x_range[1]
+                    new_x_d = 2 * self.opt_fun.x_range[1] - new_x_d
+                    pn['v'][d] = -v
 
                 # Change position
                 pn['x'][d] = new_x_d
@@ -88,9 +90,9 @@ class PSO:
                 # Check for edge
                 new_x_d = pn['x'][d] + v
                 if new_x_d < self.opt_fun.x_range[0]:
-                    new_x_d = self.opt_fun.x_range[0]
+                    new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
                 if new_x_d > self.opt_fun.x_range[1]:
-                    new_x_d = self.opt_fun.x_range[1]
+                    new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
 
                 # Change position
                 pn['x'][d] = new_x_d
