@@ -3,7 +3,9 @@
         "auto": true,
         "save_csv_summary": true,
         "save_csv_details": false,
-        "repeats": 10,
+        "save_csv_y_matrix": false,
+        "activate_ga": false,
+        "repeats": 50,
         "inputs": [
             "pso_a",
             "pso_b",
@@ -76,5 +78,40 @@
         "population": 50,
         "dimension": 2,
         "w_set": "a"
+    },
+    "pso_f1": {
+        "function": "f1",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a",
+        "iterations": 200
+    },
+    "pso_f2": {
+        "function": "f2",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a",
+        "iterations": 200
+    },
+    "pso_f5": {
+        "function": "f5",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a",
+        "iterations": 200
+    },
+    "pso_f10": {
+        "function": "f10",
+        "population": 50,
+        "dimension": 2,
+        "w_set": "a",
+        "iterations": 200
+    },
+    "pso_f11": {
+        "function": "f11",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a",
+        "iterations": 200
     }
 }

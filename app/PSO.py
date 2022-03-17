@@ -142,7 +142,6 @@ class PSO:
         else:
             raise Exception(f'Iterations should be integer or left empty, got {iterations}')
 
-        self.logs['avg_y'] = sum(logs_y) / len(self.particles)
         self.logs['y'] = tuple(logs_y)
         return self.y
 
