@@ -1,0 +1,127 @@
+{
+    "settings": {
+        "auto": false,
+        "save_csv_summary": false,
+        "save_csv_details": false,
+        "save_csv_y_matrix": false,
+        "activate_ga": false,
+        "repeats": 2,
+        "inputs": [
+            "pso_a",
+            "pso_b",
+            "pso_d"
+        ]
+    },
+    "w_parameters": {
+        "a": {
+            "w_v": 0.729,
+            "w_g": 1.494,
+            "w_l": 1.494
+        },
+        "b": {
+            "w_v": 0.6,
+            "w_g": 1.7,
+            "w_l": 1.7
+        },
+        "c": {
+            "w_v": [0.4, 0.9],
+            "w_g": [0.5, 2.5],
+            "w_l": [0.5, 2.5]
+        }
+    },
+    "lcso_ex": {
+        "function": "f1",
+        "population": 20,
+        "dimension": 3
+    },
+    "cso_ex": {
+        "function": "f1",
+        "population": 20,
+        "dimension": 3
+    },
+    "pso_ex": {
+        "function": "f1",
+        "population": 20,
+        "dimension": 2,
+        "w_set": "a"
+    },
+    "pso_a": {
+        "function": "f1",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a"
+    },
+    "pso_b": {
+        "function": "f2",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "b"
+    },
+    "pso_c": {
+        "function": "f1",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "c"
+    },
+    "pso_d": {
+        "function": "f10",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a"
+    },
+    "pso_e": {
+        "function": "f10",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a",
+        "alternative": true
+    },
+    "pso_f": {
+        "function": "f12",
+        "population": 50,
+        "dimension": 2,
+        "w_set": "a",
+        "iterations": 400
+    },
+    "pso_g": {
+        "function": "f12",
+        "population": 50,
+        "dimension": 2,
+        "w_set": "a"
+    },
+    "pso_f1": {
+        "function": "f1",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a",
+        "iterations": 200
+    },
+    "pso_f2": {
+        "function": "f2",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a",
+        "iterations": 200
+    },
+    "pso_f5": {
+        "function": "f5",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a",
+        "iterations": 200
+    },
+    "pso_f10": {
+        "function": "f10",
+        "population": 50,
+        "dimension": 2,
+        "w_set": "a",
+        "iterations": 200
+    },
+    "pso_f11": {
+        "function": "f11",
+        "population": 50,
+        "dimension": 20,
+        "w_set": "a",
+        "iterations": 200
+    }
+}

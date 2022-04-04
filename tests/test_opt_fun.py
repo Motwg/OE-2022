@@ -1,5 +1,5 @@
 import pytest
-from optimization_functions import OptimizationFunction
+from app.optimization_functions import OptimizationFunction
 
 
 def test_f1():

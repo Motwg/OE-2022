@@ -1,6 +1,6 @@
 import random
 import pytest
-from PSO import PSO
+from app.PSO import PSO
 
 
 def test_pso(sum_opt_funct):
@@ -34,9 +34,13 @@ def test_pso_evaluate(sum_opt_funct):
         pso.evaluate(iterations=0)
     # sum of 2 dimensions from (-10, 10)
     assert -20 <= pso.evaluate() <= 20
+    pso.reset()
     assert -20 <= pso.evaluate(iterations=50) <= 20
+    pso.reset()
     assert -20 <= pso.evaluate(alternative=True) <= 20
+    pso.reset()
     assert -20 <= pso.evaluate(iterations=50, alternative=True) <= 20
+    pso.reset()
 
 
 def test_pso_step_sum(sum_opt_funct):

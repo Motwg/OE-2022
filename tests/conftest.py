@@ -1,6 +1,6 @@
 import pytest
 
-from optimization_functions import OptimizationFunction
+from app.optimization_functions import OptimizationFunction
 
 
 @pytest.fixture

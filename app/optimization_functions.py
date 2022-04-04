@@ -70,8 +70,8 @@ def f5(vector_x):
 def f7(vector_x):
     x1 = vector_x[0]
     x2 = vector_x[1]
-    x1_pi_2 = (-x1-math.pi) * (-x1-math.pi)
-    x2_pi_2 = (-x2-math.pi) * (-x2-math.pi)
+    x1_pi_2 = (-x1 - math.pi) * (-x1 - math.pi)
+    x2_pi_2 = (-x2 - math.pi) * (-x2 - math.pi)
     return -1 * math.cos(x1) * math.cos(x2) * math.exp(x1_pi_2 - x2_pi_2)
 
 
@@ -85,12 +85,12 @@ def f10(vector_x):
 
 
 def f11(vector_x):
-    sum1 = 0
-    sum2 = 0
-    for i, x in enumerate(vector_x):
-        sum1 += x
-        sum2 += (i / 2) * x
-    return -sum1 + math.pow(sum2, 2) + math.pow(sum2, 4)
+    _sum = sum(map(
+        lambda i, xi: xi * i * 0.5,
+        range(1, len(vector_x) + 1),
+        vector_x
+    ))
+    return -sum(vector_x) + (_sum2 := _sum * _sum) + _sum2 * _sum2
 
 
 def f12(vector_x):
