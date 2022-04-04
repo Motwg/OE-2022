@@ -1,9 +1,6 @@
 from random import uniform
-import math
 
-from app.optimization_functions import OptimizationFunction
-
-MAX_FLOAT = float('inf')
+from app.SO import SO
 
 
 def call_w(w):
@@ -13,32 +10,20 @@ def call_w(w):
     return w
 
 
-class PSO:
+class PSO(SO):
 
     def __init__(self, population, dimension, opt_function, **kwargs):
-        assert isinstance(opt_function, OptimizationFunction)
+        super().__init__(population, dimension, opt_function)
 
-        if opt_function.dimension_constraints[0] > dimension \
-                or opt_function.dimension_constraints[1] < dimension:
-            raise Exception(f'Given dimension is out of boundaries: '
-                            f'{dimension} not in {opt_function.dimension_constraints}')
         self.particles = {}
-        self.best_global = []
 
         self.w_v = kwargs.get('w_v', 0.729)
         self.w_l = kwargs.get('w_l', 1.494)
         self.w_g = kwargs.get('w_g', 1.494)
 
-        self.opt_fun = opt_function
-        self.dimensions = dimension
-        self.population = population
-        self.y = MAX_FLOAT
-
-        self.logs = {}
-
         self.reset()
 
-    def step(self, *args, **kwargs):
+    def step(self) -> float:
         for pn in self.particles:
             for d in range(self.dimensions):
                 # Calculate new velocity
@@ -50,11 +35,13 @@ class PSO:
                 # Check for edge
                 new_x_d = pn['x'][d] + v
                 if new_x_d < self.opt_fun.x_range[0]:
-                    new_x_d -= self.opt_fun.x_range[0]
-                    pn['v'][d] = -v
+                    new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
+                    # new_x_d -= self.opt_fun.x_range[0]
+                    # pn['v'][d] = -v
                 if new_x_d > self.opt_fun.x_range[1]:
-                    new_x_d = 2 * self.opt_fun.x_range[1] - new_x_d
-                    pn['v'][d] = -v
+                    new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
+                    # new_x_d = 2 * self.opt_fun.x_range[1] - new_x_d
+                    # pn['v'][d] = -v
 
                 # Change position
                 pn['x'][d] = new_x_d
@@ -71,7 +58,9 @@ class PSO:
             if f_value < self.opt_fun(pn['best_local']):
                 pn['best_local'] = pn['x'].copy()
 
-    def alt_step(self, *args, **kwargs):
+        return self.y
+
+    def alt_step(self) -> float:
         avg_diff = [0] * self.dimensions
         for d in range(self.dimensions):
             for pn in self.particles:
@@ -89,11 +78,13 @@ class PSO:
                 # Check for edge
                 new_x_d = pn['x'][d] + v
                 if new_x_d < self.opt_fun.x_range[0]:
-                    new_x_d -= self.opt_fun.x_range[0]
-                    pn['v'][d] = -v
+                    new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
+                    # new_x_d -= self.opt_fun.x_range[0]
+                    # pn['v'][d] = -v
                 if new_x_d > self.opt_fun.x_range[1]:
-                    new_x_d = 2 * self.opt_fun.x_range[1] - new_x_d
-                    pn['v'][d] = -v
+                    new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
+                    # new_x_d = 2 * self.opt_fun.x_range[1] - new_x_d
+                    # pn['v'][d] = -v
 
                 # Change position
                 pn['x'][d] = new_x_d
@@ -110,42 +101,17 @@ class PSO:
             if f_value < self.opt_fun(pn['best_local']):
                 pn['best_local'] = pn['x'].copy()
 
-    def evaluate(self, iterations=None, alternative=False, *args, **kwargs):
-        logs_y = []
-        # accuracy mode
-        if iterations is None:
-            for i in range(10000):
-                y = self.y
-                if alternative:
-                    self.alt_step()
-                else:
-                    self.step()
-                logs_y.append(self.y)
-                # 10 last solutions are equal => break
-                if 0 < math.fabs(self.y - y) <= self.opt_fun.accuracy \
-                        or len(logs_y) > 10 \
-                        and all(logs_y[-1] == log_y for log_y in logs_y[-10:]):
-                    self.logs['iterations'] = i
-                    break
-            else:
-                self.logs['iterations'] = 10000
-
-        # iteration mode
-        elif isinstance(iterations, int) and iterations > 0:
-            for i in range(iterations):
-                if alternative:
-                    self.alt_step()
-                else:
-                    self.step()
-                logs_y.append(self.y)
-            self.logs['iterations'] = iterations
-        else:
-            raise Exception(f'Iterations should be integer or left empty, got {iterations}')
-
-        self.logs['y'] = tuple(logs_y)
         return self.y
 
+    def evaluate(self, iterations=None, alternative=False, *args, **kwargs):
+        if alternative:
+            return super().evaluate(self.alt_step, iterations)
+        else:
+            return super().evaluate(self.step, iterations)
+
     def reset(self):
+        super().reset()
+
         self.particles = [{
             'v': [0] * self.dimensions,
             # actual position of particle in dimension
@@ -157,7 +123,3 @@ class PSO:
             p['best_local'] = p['x'].copy()
         # global max
         self.best_global = self.particles[0]['x'].copy()
-
-        self.y = MAX_FLOAT
-
-        self.logs = {}

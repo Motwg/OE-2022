@@ -1,11 +1,11 @@
 {
     "settings": {
-        "auto": true,
-        "save_csv_summary": true,
+        "auto": false,
+        "save_csv_summary": false,
         "save_csv_details": false,
         "save_csv_y_matrix": false,
         "activate_ga": false,
-        "repeats": 50,
+        "repeats": 2,
         "inputs": [
             "pso_a",
             "pso_b",
@@ -29,7 +29,17 @@
             "w_l": [0.5, 2.5]
         }
     },
-    "pso_01": {
+    "lcso_ex": {
+        "function": "f1",
+        "population": 20,
+        "dimension": 3
+    },
+    "cso_ex": {
+        "function": "f1",
+        "population": 20,
+        "dimension": 3
+    },
+    "pso_ex": {
         "function": "f1",
         "population": 20,
         "dimension": 2,
