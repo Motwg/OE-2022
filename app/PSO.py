@@ -1,6 +1,7 @@
 from random import uniform
 
 from app.SO import SO
+from app.utils import bounce
 
 
 def call_w(w):
@@ -32,19 +33,8 @@ class PSO(SO):
                     + call_w(self.w_g) * uniform(0, 1) * (self.best_global[d] - pn['x'][d])
                 pn['v'][d] = v
 
-                # Check for edge
-                new_x_d = pn['x'][d] + v
-                if new_x_d < self.opt_fun.x_range[0]:
-                    new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
-                    # new_x_d -= self.opt_fun.x_range[0]
-                    # pn['v'][d] = -v
-                if new_x_d > self.opt_fun.x_range[1]:
-                    new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
-                    # new_x_d = 2 * self.opt_fun.x_range[1] - new_x_d
-                    # pn['v'][d] = -v
-
-                # Change position
-                pn['x'][d] = new_x_d
+                # Check for edge and change position
+                pn['x'][d] = bounce(pn['x'][d] + v, self.opt_fun.x_range)
 
             # Calculate new value
             f_value = self.opt_fun(pn['x'])
@@ -75,19 +65,8 @@ class PSO(SO):
                     + call_w(self.w_g) * uniform(0, 1) * (avg_diff[d] - pn['x'][d])
                 pn['v'][d] = v
 
-                # Check for edge
-                new_x_d = pn['x'][d] + v
-                if new_x_d < self.opt_fun.x_range[0]:
-                    new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
-                    # new_x_d -= self.opt_fun.x_range[0]
-                    # pn['v'][d] = -v
-                if new_x_d > self.opt_fun.x_range[1]:
-                    new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
-                    # new_x_d = 2 * self.opt_fun.x_range[1] - new_x_d
-                    # pn['v'][d] = -v
-
-                # Change position
-                pn['x'][d] = new_x_d
+                # Check edge and change position
+                pn['x'][d] = pn['x'][d] + v
 
             # Calculate new value
             f_value = self.opt_fun(pn['x'])
