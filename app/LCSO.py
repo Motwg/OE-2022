@@ -100,16 +100,18 @@ class LCSO(SO):
             v_l = uniform(0, 1) * v_l \
                 + uniform(0, 1) * (x_w - x_l) \
                 + uniform(0, 1) * (x_s - x_l)
-            return v_s + x_s, v_l + x_l
+            return v_s + x_s, v_l + x_l, v_s, v_l
 
-        # compute new position for s and loser
-        x = list(map(count_x, w['x'], s['x'], los['x'], s['v'], los['v']))
-        # rotate matrix to extract x_s and x_l in vectors
-        vector_x_s, vector_x_l = list(zip(*x))
+        # compute new position and v for s and loser
+        xv = list(map(count_x, w['x'], s['x'], los['x'], s['v'], los['v']))
+        # rotate matrix to extract x_s, x_l, v_s and v_l in vectors
+        vector_x_s, vector_x_l, vector_v_s, vector_v_l = list(zip(*xv))
 
         # perform map to get full vector of x
         s['x'] = list(map(self.bounce, vector_x_s))
         los['x'] = list(map(self.bounce, vector_x_l))
+        s['v'] = list(map(self.bounce, vector_v_s))
+        los['v'] = list(map(self.bounce, vector_v_l))
 
         # return indexes of winner
         return next(iter(ordered))
