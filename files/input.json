@@ -31,8 +31,10 @@
     },
     "lcso_ex": {
         "function": "f1",
-        "population": 20,
-        "dimension": 3
+        "population": 100,
+        "dimension": 30,
+        "no_swarms": 20,
+        "velocity_magnitude": 1e-3
     },
     "cso_ex": {
         "function": "f1",

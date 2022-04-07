@@ -44,8 +44,8 @@ class SO:
 
                 # 10 last solutions are equal => break
                 if 0 < math.fabs(self.y - y) <= self.opt_fun.accuracy \
-                        or len(logs_y) > 10 \
-                        and all(logs_y[-1] == log_y for log_y in logs_y[-10:]):
+                        or len(logs_y) > 50 \
+                        and all(logs_y[-1] == log_y for log_y in logs_y[-50:]):
                     self.logs['iterations'] = i
                     break
             else:

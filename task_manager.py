@@ -161,7 +161,9 @@ class TaskManager:
         lcso = LCSO(
             input_data['population'],
             input_data['dimension'],
-            opt_function
+            opt_function,
+            input_data['no_swarms'],
+            velocity_magnitude=input_data.get('velocity_magnitude', 0.0)
         )
 
         evaluate_kwargs = {
