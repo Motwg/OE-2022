@@ -4,7 +4,11 @@ from operator import concat
 
 
 def bounce(x, x_range):
-    # TODO: Make it bounce
+    # TODO: Make it bounce instead of glueing
+    return glue_to_wall(x, x_range)
+
+
+def glue_to_wall(x, x_range):
     if x < x_range[0]:
         return x_range[0]
     elif x > x_range[1]:

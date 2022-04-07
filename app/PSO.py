@@ -65,8 +65,8 @@ class PSO(SO):
                     + call_w(self.w_g) * uniform(0, 1) * (avg_diff[d] - pn['x'][d])
                 pn['v'][d] = v
 
-                # Check edge and change position
-                pn['x'][d] = pn['x'][d] + v
+                # Check for edge and change position
+                pn['x'][d] = bounce(pn['x'][d] + v, self.opt_fun.x_range)
 
             # Calculate new value
             f_value = self.opt_fun(pn['x'])
