@@ -7,9 +7,8 @@
         "activate_ga": false,
         "repeats": 2,
         "inputs": [
-            "pso_a",
-            "pso_b",
-            "pso_d"
+            "cso_ex",
+            "lcso_ex"
         ]
     },
     "w_parameters": {
@@ -38,8 +37,9 @@
     },
     "cso_ex": {
         "function": "f1",
-        "population": 20,
-        "dimension": 3
+        "population": 100,
+        "dimension": 30,
+        "no_swarms": 20
     },
     "pso_ex": {
         "function": "f1",

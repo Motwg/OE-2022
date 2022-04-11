@@ -1,110 +1,88 @@
-from functools import partial
-from random import uniform, sample, choices
+from collections import OrderedDict
+from random import uniform, choice
 
-from app.SO import SO
-from app.utils import bounce
+from app.MultiSO import MultiSO
+from app.utils import shuffle, grouped
 
 
-class CSO(SO):
+def validate_cso(init):
+    """
+    Validates CSO inputs in init
+    """
 
-    def __init__(self, population, dimension, opt_function, **kwargs):
-        super().__init__(population, dimension, opt_function)
+    def wrapper(self, population, dimension, opt_function, no_swarms, **kwargs):
+        if no_swarms < 2:
+            raise Exception(f'Number of swarms should be greater than 2, '
+                            f'got {no_swarms}')
+        elif population < 2 * no_swarms:
+            raise Exception(f'Population should be 2 times greater than number of swarms, '
+                            f'got pop: {population}, swarms: {no_swarms}')
+        return init(self, population, dimension, opt_function, no_swarms, **kwargs)
 
-        self.particles = {}
-        self.velocity_magnitude = kwargs.get('velocity_magnitude', 0.0)
+    return wrapper
 
-        # feed bounce function with constant x_range to speed up computing
-        self.bounce = partial(bounce, x_range=self.opt_fun.x_range)
 
-        self.reset()
+class CSO(MultiSO):
 
-    def reset(self):
-        super().reset()
-
-        # (x_range difference * -magnitude, x_range difference * magnitude)
-        v_init_range = list(map(
-            lambda m: (self.opt_fun.x_range[1] - self.opt_fun.x_range[0]) * m,
-            (-self.velocity_magnitude, self.velocity_magnitude)
-        ))
-
-        self.particles = [{
-            'v': [uniform(*v_init_range) for _ in range(self.dimensions)],
-            # actual position of particle in dimension
-            'x': [uniform(*self.opt_fun.x_range) for _ in range(self.dimensions)]
-        } for _ in range(self.population)]
-
-        # local max
-        for p in self.particles:
-            p['best_local'] = p['x'].copy()
-        # global max
-        self.best_global = self.particles[0]['x'].copy()
+    @validate_cso
+    def __init__(self, population, dimension, opt_function, no_swarms, **kwargs):
+        super().__init__(population, dimension, opt_function, no_swarms, **kwargs)
 
     def step(self) -> float:
-        # TODO: (AL) add implementation
-
-        # Calculate avg position
-        sum_pos = [0] * self.dimensions
-        avg_pos = [0] * self.dimensions
-        for d in range(self.dimensions):
-            for pn in self.particles:
-                sum_pos[d] += pn['x'][d]
-            avg_pos[d] = sum_pos[d] / len(self.particles)
-
-        # Make copy of particles
-        particles_copy = self.particles.copy()
-
-        for i in range(len(self.particles) // 2):
-            # Select random two particles
-            pn1, pn2 = sample(particles_copy, k=2)
-            # Delete them from copy set
-            del particles_copy[self.get_particle_index(particles_copy, pn1)]
-            del particles_copy[self.get_particle_index(particles_copy, pn2)]
-            # Particles compete
-            f1 = self.opt_fun(pn1['x'])
-            f2 = self.opt_fun(pn2['x'])
-            # Loser changes parameters
-            if f1 > f2:
-                self.adjust_loser(pn1, pn2, avg_pos)
-            elif f1 < f2:
-                self.adjust_loser(pn2, pn1, avg_pos)
-            # Assign new values if new minimum
-            if f1 < self.y:
-                self.y = f1
-                self.best_global = pn1['x'].copy()
-            elif f2 < self.y:
-                self.y = f2
-                self.best_global = pn2['x'].copy()
-
+        self.shuffle()
+        selected_winners = self.stage_one()
+        self.stage_two(selected_winners)
+        self.select_best()
         return self.y
 
-    def evaluate(self, iterations: int = None, *args, **kwargs):
-        return super().evaluate(self.step, iterations)
+    def stage_one(self):
+        winners = []
+        for i, swarm in enumerate(self.particles):
+            swarm_avg_pos = self.calculate_avg_pos(swarm)
 
-    def adjust_loser(self, pnw, pnl, avg_pos):
-        wp = self.get_particle(pnw)
-        lp = self.get_particle(pnl)
+            # select only one random winner particle for each swarm
+            winners.append(choice(
+                # take every 2 particles from swarm only once and get winners
+                [self.tournament([(i, p), (i, p + 1)], swarm_avg_pos)
+                 for p in range(len(swarm) % 2, len(swarm), 2)]
+            ))
+        return shuffle(winners)
 
-        w = 0.5
+    def stage_two(self, winners):
+        winners_avg_pos = self.calculate_avg_pos(
+            [self.get_particle(*w) for w in winners]
+        )
 
-        for d in range(self.dimensions):
-            v = uniform(0, 1) * lp['v'][d] \
-                   + uniform(0, 1) * (wp['x'][d] - lp['x'][d]) \
-                   + w * uniform(0, 1) * (avg_pos[d] - lp['x'][d])
+        # take every 2 particles from swarm only once
+        for bests in grouped(winners, 2):
+            self.tournament(bests, winners_avg_pos)
 
-            # Check for edge
-            new_x_d = lp['x'][d] + v
-            if new_x_d < self.opt_fun.x_range[0]:
-                new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
-            if new_x_d > self.opt_fun.x_range[1]:
-                new_x_d = (self.opt_fun.x_range[0] + self.opt_fun.x_range[1]) / 2
-            lp['x'][d] = new_x_d
+    def tournament(self, idx_particles: list, avg_swarm_pos: list) -> tuple:
+        # sort ascending indexes by calculated function value
+        ordered = OrderedDict(sorted(
+            {i: self.get_particle(*i) for i in idx_particles}.items(),
+            key=lambda kv: self.opt_fun(kv[1]['x'])
+        ))
+        # assign particles to w and los (these are not copies!)
+        w, los = ordered.values()
 
-    def get_particle(self, par):
-        for pn in self.particles:
-            if pn == par:
-                return pn
+        def count_xv(x_w, x_l, v_l, avg_pos):
+            v_l = uniform(0, 1) * v_l \
+                  + uniform(0, 1) * (x_w - x_l) \
+                  + 0.3 * uniform(0, 1) * (avg_pos - x_l)
+            return v_l + x_l, v_l
 
-    def get_particle_index(self, copy_set, par):
-        for i in range(len(copy_set)):
-            if copy_set[i] == par:
-                return i
+        # compute new position and v for loser
+        xv = list(map(count_xv, w['x'], los['x'], los['v'], avg_swarm_pos))
+        # rotate matrix to extract x_l and v_l in vectors
+        vector_x_l, los['v'] = list(zip(*xv))
+
+        # perform map to get full vector of bounced positions and save them
+        los['x'] = list(map(self.bounce, vector_x_l))
+
+        # return indexes of winner
+        return next(iter(ordered))
+
+    def calculate_avg_pos(self, swarm) -> list:
+        return [sum(p['x'][d] for p in swarm) / len(swarm)
+                for d in range(self.dimensions)]
