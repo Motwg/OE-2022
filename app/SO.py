@@ -3,12 +3,11 @@ from collections.abc import Callable
 
 from app.optimization_functions import OptimizationFunction
 
-
 MAX_FLOAT = float('inf')
 
 
 class SO:
-    def __init__(self, population, dimension, opt_function):
+    def __init__(self, population, dimension, opt_function, **kwargs):
         assert isinstance(opt_function, OptimizationFunction)
 
         if opt_function.dimension_constraints[0] > dimension \
@@ -23,6 +22,13 @@ class SO:
         # best x-es with best y
         self.best_global = []
         self.y = MAX_FLOAT
+
+        velocity_magnitude = kwargs.get('velocity_magnitude', 0.0)
+        # (x_range difference * -magnitude, x_range difference * magnitude)
+        self.v_init_range = list(map(
+            lambda m: (self.opt_fun.x_range[1] - self.opt_fun.x_range[0]) * m,
+            (-velocity_magnitude, velocity_magnitude)
+        ))
 
         self.logs = {}
 

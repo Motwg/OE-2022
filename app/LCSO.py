@@ -1,9 +1,8 @@
 from collections import OrderedDict
-from random import uniform, sample, choice
-from functools import partial
+from random import uniform, choice
 
-from app.SO import SO
-from app.utils import bounce, shuffle, grouped, flatten
+from app.MultiSO import MultiSO
+from app.utils import shuffle, grouped
 
 
 def validate_lcso(init):
@@ -17,47 +16,17 @@ def validate_lcso(init):
                             f'got {no_swarms}')
         elif population < 3 * no_swarms:
             raise Exception(f'Population should be 3 times greater than number of swarms, '
-                            f'got {population} < {no_swarms}')
+                            f'got pop: {population}, swarms: {no_swarms}')
         return init(self, population, dimension, opt_function, no_swarms, **kwargs)
 
     return wrapper
 
 
-class LCSO(SO):
+class LCSO(MultiSO):
 
     @validate_lcso
     def __init__(self, population, dimension, opt_function, no_swarms, **kwargs):
-        super().__init__(population, dimension, opt_function)
-        self.particles = []
-        self.no_swarms = no_swarms
-
-        self.velocity_magnitude = kwargs.get('velocity_magnitude', 0.0)
-
-        # feed bounce function with constant x_range to speed up computing
-        self.bounce = partial(bounce, x_range=self.opt_fun.x_range)
-
-        self.reset()
-
-    def reset(self):
-        super().reset()
-
-        # (x_range difference * -magnitude, x_range difference * magnitude)
-        v_init_range = list(map(
-            lambda m: (self.opt_fun.x_range[1] - self.opt_fun.x_range[0]) * m,
-            (-self.velocity_magnitude, self.velocity_magnitude)
-        ))
-
-        # initialises particles splitting them into swarms
-        # e.g. [[swarm 0], [swarm 1], ...]; swarms may not be equal in size
-        self.particles = [[{
-            # random velocity at start
-            'v': [uniform(*v_init_range) for _ in range(self.dimensions)],
-            'x': [uniform(*self.opt_fun.x_range) for _ in range(self.dimensions)]
-        } for _ in range(swarm, self.population, self.no_swarms)]
-            for swarm in range(self.no_swarms)]
-
-        # global max
-        self.best_global = self.particles[0][0]['x'].copy()
+        super().__init__(population, dimension, opt_function, no_swarms, **kwargs)
 
     def step(self) -> float:
         self.shuffle()
@@ -79,12 +48,8 @@ class LCSO(SO):
 
     def stage_two(self, winners):
         # take every 3 particles from swarm only once
-        for first, second, third in grouped(winners, 3):
-            self.tournament([first, second, third])
-
-    def shuffle(self):
-        self.particles = [sample(self.particles[i], k=len(self.particles[i]))
-                          for i in range(self.no_swarms)]
+        for bests in grouped(winners, 3):
+            self.tournament(bests)
 
     def tournament(self, idx_particles: list) -> tuple:
         # sort ascending indexes by calculated function value
@@ -92,10 +57,10 @@ class LCSO(SO):
             {i: self.get_particle(*i) for i in idx_particles}.items(),
             key=lambda kv: self.opt_fun(kv[1]['x'])
         ))
-        # assign particles to w, v and los (these are not copies!)
+        # assign particles to w, s and los (these are not copies!)
         w, s, los = ordered.values()
 
-        def count_x(x_w, x_s, x_l, v_s, v_l):
+        def count_xv(x_w, x_s, x_l, v_s, v_l):
             v_s = uniform(0, 1) * v_s + uniform(0, 1) * (x_w - x_s)
             v_l = uniform(0, 1) * v_l \
                 + uniform(0, 1) * (x_w - x_l) \
@@ -103,29 +68,15 @@ class LCSO(SO):
             return v_s + x_s, v_l + x_l, v_s, v_l
 
         # compute new position and v for s and loser
-        xv = list(map(count_x, w['x'], s['x'], los['x'], s['v'], los['v']))
+        xv = list(map(count_xv, w['x'], s['x'], los['x'], s['v'], los['v']))
         # rotate matrix to extract x_s, x_l, v_s and v_l in vectors
         vector_x_s, vector_x_l, vector_v_s, vector_v_l = list(zip(*xv))
 
         # perform map to get full vector of x
         s['x'] = list(map(self.bounce, vector_x_s))
         los['x'] = list(map(self.bounce, vector_x_l))
-        s['v'] = list(map(self.bounce, vector_v_s))
-        los['v'] = list(map(self.bounce, vector_v_l))
+        s['v'] = vector_v_s
+        los['v'] = vector_v_l
 
         # return indexes of winner
         return next(iter(ordered))
-
-    def get_particle(self, swarm_idx, particle_idx):
-        return self.particles[swarm_idx][particle_idx]
-
-    def select_best(self):
-        flattened = flatten(self.particles)
-        computed = {i: self.opt_fun(p['x']) for i, p in enumerate(flattened)}
-        # find particle with minimal value of optimisation function
-        best_particle_idx = min(computed, key=computed.get)
-        self.y = computed[best_particle_idx]
-        self.best_global = flattened[best_particle_idx]['x']
-
-    def evaluate(self, iterations: int = None, *args, **kwargs):
-        return super().evaluate(self.step, iterations)
