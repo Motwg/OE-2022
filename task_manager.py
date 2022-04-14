@@ -1,5 +1,6 @@
 import csv
 
+from datetime import datetime
 from itertools import zip_longest
 
 from app.GA import GA
@@ -38,12 +39,12 @@ class TaskManager:
 
         # logs
         # averages over repeats
-        self.avg_y, self.avg_iterations = [], []
+        self.avg_y, self.avg_iterations, self.avg_times = [], [], []
         # y-s for each repeat
         self.y_matrix = []
 
     def reset_logs(self):
-        self.avg_y, self.avg_iterations = [], []
+        self.avg_y, self.avg_iterations, self.avg_times = [], [], []
         self.y_matrix = []
 
     def start_tasks(self):
@@ -66,30 +67,37 @@ class TaskManager:
         if self.save_csv_summary:
             write_csv(
                 'pso.csv',
-                ('input', 'avg_y', 'avg_iterations'),
-                zip(self.user_inputs, self.avg_y, self.avg_iterations)
+                ('input', 'avg_y', 'avg_iterations', 'avg_times'),
+                zip(self.user_inputs, self.avg_y, self.avg_iterations, self.avg_times)
             )
 
     def so_task(self, so_object: SO, **evaluate_kwargs) -> [[int], [int]]:
-        y, iterations = [], []
+        y, iterations, times = [], [], []
         for i in range(self.repeats):
             print(f'===REPEAT {i + 1}===')
 
+            start_time = datetime.now()
             y.append(so_object.evaluate(**evaluate_kwargs))
-            # log y and iterations
+            run_time = datetime.now() - start_time
+
+            # log y, iterations and time to find solution
+            times.append(run_time.microseconds)
             iterations.append(so_object.logs['iterations'])
             self.y_matrix.append(so_object.logs['y'])
 
             print(f'Best solution {so_object.y} for {so_object.best_global}')
             print(so_object.logs)
             so_object.reset()
-        print(f'Solutions : {y}')
-        print(f'Iterations: {iterations}')
-        print(f'Average best solution: {sum(y) / self.repeats}')
-        print(f'Average no iterations: {sum(iterations) // self.repeats}')
 
         self.avg_y.append(sum(y) / self.repeats)
         self.avg_iterations.append(sum(iterations) // self.repeats)
+        self.avg_times.append(sum(times) // self.repeats)
+
+        print(f'Solutions : {y}')
+        print(f'Iterations: {iterations}')
+        print(f'Average best solution        : {self.avg_y[-1]}')
+        print(f'Average no iterations        : {self.avg_iterations[-1]}')
+        print(f'Average time to find solution: {self.avg_times[-1]} μs')
 
         return y, iterations
 
