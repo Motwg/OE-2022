@@ -66,7 +66,7 @@ class TaskManager:
         # save to csv avg_y and avg_iterations for every input in one summary
         if self.save_csv_summary:
             write_csv(
-                'pso.csv',
+                'summary.csv',
                 ('input', 'avg_y', 'avg_iterations', 'avg_times'),
                 zip(self.user_inputs, self.avg_y, self.avg_iterations, self.avg_times)
             )
@@ -99,7 +99,7 @@ class TaskManager:
         print(f'Average no iterations        : {self.avg_iterations[-1]}')
         print(f'Average time to find solution: {self.avg_times[-1]} μs')
 
-        return y, iterations
+        return y, iterations, times
 
     def pso_task(self, user_input, input_data):
         # init classes
@@ -116,7 +116,7 @@ class TaskManager:
             'alternative': input_data.get('alternative', False)
         }
 
-        y, iterations = self.so_task(pso, **evaluate_kwargs)
+        y, iterations, _ = self.so_task(pso, **evaluate_kwargs)
 
         if self.activate_ga:
             self.ga_subtask(input_data, opt_function)
@@ -178,7 +178,27 @@ class TaskManager:
             'iterations': input_data.get('iterations', None)
         }
 
-        y, iterations = self.so_task(lcso, **evaluate_kwargs)
+        y, iterations, times = self.so_task(lcso, **evaluate_kwargs)
+
+        # save to csv y and iterations
+        if self.save_csv_details:
+            write_csv(
+                f'{user_input}.csv',
+                (f'{user_input}_solution',
+                 f'{user_input}_iterations',
+                 f'{user_input}_runtime'),
+                zip(y, iterations, times)
+            )
+        # take only actual repeats (from the last input)
+        cur_y_matrix = self.y_matrix[-self.repeats:]
+        # save all y-s in every repeat
+        if self.save_csv_y_matrix:
+            write_csv(
+                f'{user_input}_y_matrix.csv',
+                range(1, self.repeats + 1),
+                # needs to rotate matrix
+                zip_longest(*cur_y_matrix[::-1])
+            )
 
     def cso_task(self, user_input, input_data):
         # init classes
@@ -195,4 +215,24 @@ class TaskManager:
             'iterations': input_data.get('iterations', None)
         }
 
-        y, iterations = self.so_task(cso, **evaluate_kwargs)
+        y, iterations, times = self.so_task(cso, **evaluate_kwargs)
+
+        # save to csv y and iterations
+        if self.save_csv_details:
+            write_csv(
+                f'{user_input}.csv',
+                (f'{user_input}_solution',
+                 f'{user_input}_iterations',
+                 f'{user_input}_runtime'),
+                zip(y, iterations, times)
+            )
+        # take only actual repeats (from the last input)
+        cur_y_matrix = self.y_matrix[-self.repeats:]
+        # save all y-s in every repeat
+        if self.save_csv_y_matrix:
+            write_csv(
+                f'{user_input}_y_matrix.csv',
+                range(1, self.repeats + 1),
+                # needs to rotate matrix
+                zip_longest(*cur_y_matrix[::-1])
+            )
