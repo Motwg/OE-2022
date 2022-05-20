@@ -28,6 +28,30 @@
             "w_l": [0.5, 2.5]
         }
     },
+    "lcso_a": {
+        "function": "f1",
+        "population": 144,
+        "dimension": 30,
+        "no_swarms": 12
+    },
+    "cso_a": {
+        "function": "f1",
+        "population": 144,
+        "dimension": 30,
+        "no_swarms": 12
+    },
+    "lcso_b": {
+        "function": "f10",
+        "population": 144,
+        "dimension": 30,
+        "no_swarms": 12
+    },
+    "cso_b": {
+        "function": "f10",
+        "population": 144,
+        "dimension": 30,
+        "no_swarms": 12
+    },
     "lcso_ex": {
         "function": "f1",
         "population": 100,
@@ -40,6 +64,78 @@
         "population": 100,
         "dimension": 30,
         "no_swarms": 20
+    },
+    "lcso_144_20": {
+        "function": "f1",
+        "population": 144,
+        "dimension": 20,
+        "no_swarms": 12
+    },
+    "cso_144_20": {
+        "function": "f1",
+        "population": 144,
+        "dimension": 20,
+        "no_swarms": 12
+    },
+    "lcso_144_100": {
+        "function": "f1",
+        "population": 144,
+        "dimension": 100,
+        "no_swarms": 12
+    },
+    "cso_144_100": {
+        "function": "f1",
+        "population": 144,
+        "dimension": 100,
+        "no_swarms": 12
+    },
+    "lcso_72_20": {
+        "function": "f1",
+        "population": 72,
+        "dimension": 20,
+        "no_swarms": 12
+    },
+    "cso_72_20": {
+        "function": "f1",
+        "population": 72,
+        "dimension": 20,
+        "no_swarms": 12
+    },
+    "lcso_72_100": {
+        "function": "f1",
+        "population": 72,
+        "dimension": 100,
+        "no_swarms": 12
+    },
+    "cso_72_100": {
+        "function": "f1",
+        "population": 72,
+        "dimension": 100,
+        "no_swarms": 12
+    },
+    "lcso_216_20": {
+        "function": "f1",
+        "population": 216,
+        "dimension": 20,
+        "no_swarms": 12
+    },
+    "cso_216_20": {
+        "function": "f1",
+        "population": 216,
+        "dimension": 20,
+        "no_swarms": 12
+    },
+    "lcso_216_100": {
+        "function": "f1",
+        "population": 216,
+        "dimension": 100,
+        "no_swarms": 12
+    },
+    "cso_216_100": {
+        "function": "f1",
+        "population": 216,
+        "dimension": 100,
+        "no_swarms": 12
     },
     "pso_ex": {
         "function": "f1",
