@@ -65,8 +65,10 @@ class TaskManager:
                 self.cso_task(user_input, input_data)
             elif user_input.startswith('glpso_'):
                 self.glpso_task(user_input, input_data)
+            elif user_input.startswith('ba_'):
+                self.ba_task(user_input, input_data)
             else:
-                raise Exception(f'Algorithm for input "{user_input}" not recognised')
+                raise Exception(f'Algorithm for input {user_input} not recognised')
 
         # save to csv avg_y and avg_iterations for every input in one summary
         if self.save_csv_summary:
@@ -262,7 +264,42 @@ class TaskManager:
 
         # save to csv y and iterations
         if self.save_csv_details:
-            variant = user_input.removeprefix('glpso_')
+            write_csv(
+                f'{user_input}.csv',
+                (f'{user_input}_solution',
+                 f'{user_input}_iterations',
+                 f'{user_input}_runtime'),
+                zip(y, iterations, times)
+            )
+        # take only actual repeats (from the last input)
+        cur_y_matrix = self.y_matrix[-self.repeats:]
+        # save all y-s in every repeat
+        if self.save_csv_y_matrix:
+            write_csv(
+                f'{user_input}_y_matrix.csv',
+                range(1, self.repeats + 1),
+                # needs to rotate matrix
+                zip_longest(*cur_y_matrix[::-1])
+            )
+
+    def ba_task(self, user_input, input_data):
+        # init classes
+        opt_function = OptimizationFunction(input_data['function'])
+        pso = PSO(
+            input_data['population'],
+            input_data['dimension'],
+            opt_function,
+            **self.w_parameters[input_data['w_set']]
+        )
+
+        evaluate_kwargs = {
+            'iterations': input_data.get('iterations', None)
+        }
+
+        y, iterations, times = self.so_task(pso, **evaluate_kwargs)
+
+        # save to csv y and iterations
+        if self.save_csv_details:
             write_csv(
                 f'{user_input}.csv',
                 (f'{user_input}_solution',

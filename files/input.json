@@ -5,9 +5,11 @@
         "save_csv_details": false,
         "save_csv_y_matrix": false,
         "activate_ga": false,
+        "hide_prints": false,
         "repeats": 2,
         "inputs": [
-            "glpso_ex"
+            "glpso_ex",
+            "ba_ex"
         ]
     },
     "w_parameters": {
@@ -26,6 +28,12 @@
             "w_g": [0.5, 2.5],
             "w_l": [0.5, 2.5]
         }
+    },
+    "ba_ex": {
+        "function": "f1",
+        "population": 50,
+        "dimension": 15,
+        "w_set": "a"
     },
     "glpso_ex": {
         "function": "f1",
