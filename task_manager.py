@@ -4,6 +4,7 @@ from datetime import datetime
 from itertools import zip_longest
 
 from app.GA import GA
+from app.GLPSO import GLPSO
 from app.PSO import PSO
 from app.LCSO import LCSO
 from app.CSO import CSO
@@ -60,6 +61,8 @@ class TaskManager:
                 self.lcso_task(user_input, input_data)
             elif user_input.startswith('cso_'):
                 self.cso_task(user_input, input_data)
+            elif user_input.startswith('glpso_'):
+                self.glpso_task(user_input, input_data)
             else:
                 raise Exception(f'Algorithm for input "{user_input}" not recognised')
 
@@ -81,7 +84,7 @@ class TaskManager:
             run_time = datetime.now() - start_time
 
             # log y, iterations and time to find solution
-            times.append(run_time.microseconds)
+            times.append(run_time.seconds * 1000 + run_time.microseconds // 1000)
             iterations.append(so_object.logs['iterations'])
             self.y_matrix.append(so_object.logs['y'])
 
@@ -196,3 +199,42 @@ class TaskManager:
         }
 
         y, iterations = self.so_task(cso, **evaluate_kwargs)
+
+    def glpso_task(self, user_input, input_data):
+        # init classes
+        opt_function = OptimizationFunction(input_data['function'])
+        glpso = GLPSO(
+            input_data['population'],
+            input_data['dimension'],
+            opt_function,
+            input_data['pm']
+        )
+
+        evaluate_kwargs = {
+            'iterations': input_data.get('iterations', None),
+            'alternative': input_data.get('alternative', False)
+        }
+
+        y, iterations = self.so_task(glpso, **evaluate_kwargs)
+
+        if self.activate_ga:
+            self.ga_subtask(input_data, opt_function)
+
+        # save to csv y and iterations
+        if self.save_csv_details:
+            variant = user_input.removeprefix('pso_')
+            write_csv(
+                f'{user_input}.csv',
+                (f'{variant}_solution', f'{variant}_iterations'),
+                zip(y, iterations)
+            )
+        # take only actual repeats (from the last input)
+        cur_y_matrix = self.y_matrix[-self.repeats:]
+        # save all y-s in every repeat
+        if self.save_csv_y_matrix:
+            write_csv(
+                f'{user_input}_y_matrix.csv',
+                range(1, self.repeats + 1),
+                # needs to rotate matrix
+                zip_longest(*cur_y_matrix[::-1])
+            )
