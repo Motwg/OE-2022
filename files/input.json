@@ -1,14 +1,13 @@
 {
     "settings": {
-        "auto": false,
+        "auto": true,
         "save_csv_summary": false,
         "save_csv_details": false,
         "save_csv_y_matrix": false,
         "activate_ga": false,
         "repeats": 2,
         "inputs": [
-            "cso_ex",
-            "lcso_ex"
+            "glpso_ex"
         ]
     },
     "w_parameters": {
@@ -27,6 +26,13 @@
             "w_g": [0.5, 2.5],
             "w_l": [0.5, 2.5]
         }
+    },
+    "glpso_ex": {
+        "function": "f1",
+        "population": 50,
+        "dimension": 15,
+        "pm": 0.05,
+        "w_set": "a"
     },
     "lcso_ex": {
         "function": "f1",

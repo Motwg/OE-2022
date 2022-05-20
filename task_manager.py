@@ -207,22 +207,19 @@ class TaskManager:
             input_data['population'],
             input_data['dimension'],
             opt_function,
-            input_data['pm']
+            input_data['pm'],
+            **self.w_parameters[input_data['w_set']]
         )
 
         evaluate_kwargs = {
-            'iterations': input_data.get('iterations', None),
-            'alternative': input_data.get('alternative', False)
+            'iterations': input_data.get('iterations', None)
         }
 
         y, iterations = self.so_task(glpso, **evaluate_kwargs)
 
-        if self.activate_ga:
-            self.ga_subtask(input_data, opt_function)
-
         # save to csv y and iterations
         if self.save_csv_details:
-            variant = user_input.removeprefix('pso_')
+            variant = user_input.removeprefix('glpso_')
             write_csv(
                 f'{user_input}.csv',
                 (f'{variant}_solution', f'{variant}_iterations'),

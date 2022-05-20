@@ -47,7 +47,7 @@ class GLPSO(SO):
                     self.offsprings[i]['v'][d] = uniform(-10, 10)
                 # Oblicz exemplar
             for d in range(self.dimensions):
-                self.exemplars[i]['x'][d] = self.calculateExemplar(i, d)
+                self.exemplars[i]['x'][d] = self.calculate_exemplar(i, d)
                 # Selecja
             if self.opt_fun(self.offsprings[i]['x']) < self.opt_fun(self.exemplars[i]['x']):
                 self.exemplars[i]['x'] = self.offsprings[i]['x']
@@ -76,21 +76,15 @@ class GLPSO(SO):
 
         return self.y
 
-    def alt_step(self) -> float:
-        pass
-
-    def calculateExemplar(self, i, d):
+    def calculate_exemplar(self, i, d):
         c1 = call_w(self.w_l)
         c2 = call_w(self.w_g)
         r1 = uniform(0, 1)
         r2 = uniform(0, 1)
         return (c1 * r1 * self.particles[i]['best_local'][d] + c2 * r2 * self.best_global[d]) / (c1 * r1 + c2 * r2)
 
-    def evaluate(self, iterations=None, alternative=False, *args, **kwargs):
-        if alternative:
-            return super().evaluate(self.alt_step, iterations)
-        else:
-            return super().evaluate(self.step, iterations)
+    def evaluate(self, iterations=None, *args, **kwargs):
+        return super().evaluate(self.step, iterations)
 
     def reset(self):
         super().reset()
