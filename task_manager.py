@@ -289,7 +289,7 @@ class TaskManager:
             input_data['population'],
             input_data['dimension'],
             opt_function,
-            **input_data.get('freq_range', None)
+            **input_data.get('parameters', None)
         )
 
         evaluate_kwargs = {

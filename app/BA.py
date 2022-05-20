@@ -1,5 +1,6 @@
 from functools import partial
 from random import uniform
+from cmath import exp
 
 from app.SO import SO
 from app.utils import bounce
@@ -18,17 +19,20 @@ class BA(SO):
         super().__init__(population, dimension, opt_function)
 
         self.bats = {}
+        self.t = 0
 
         # feed bounce function with constant x_range to speed up computing
         self.bounce = partial(bounce, x_range=self.opt_fun.x_range)
         self.f_range = kwargs.get('freq_range', (0, 2))
 
+        self.mod_r = kwargs.get('mod_r', 0.8)  # pulse rate modifier | mod_r > 0
+        self.mod_A = kwargs.get('mod_A', 0.9)  # loudness modifier | 0 < mod_a < 1
+
         self.reset()
 
-    def count_freq(self):
-        return self.f_range[0] + uniform(0, 1) * (self.f_range[1] - self.f_range[0])
-
     def step(self) -> float:
+        self.t += 1
+        [self.rate_bat(bat) for bat in self.bats]
 
         for bat in self.bats:
             # calculate vectors of velocity and position
@@ -40,26 +44,37 @@ class BA(SO):
                 lambda v, x: self.bounce(x + v),
                 bat['v'], bat['x']
             ))
-            if uniform(0, 1) > bat['r']:
-                best_global = list(map(
-                    lambda x: uniform(-1, 1) * self.count_avg_loudness(),
-                    self.best_global
-                ))
-                y = self.opt_fun(best_global)
-                if y < self.y and uniform(0, 1) < bat['A']:
-                    self.y = y
-                    self.best_global = best_global
 
+        for bat in self.bats:
+            if uniform(0, 1) > bat['r']:
+                self.echolocation(self.best_global)
+            else:
+                self.echolocation(bat)
         return self.y
 
-    def rate_bat(self, bat):
+    def rate_bat(self, bat: dict):
         bat['y'] = self.opt_fun(bat['x'])
         if bat['y'] < self.y:
             self.y = bat['y']
-            self.best_global = bat['x']
+            self.best_global = bat
+
+    def echolocation(self, bat: dict):
+        pos = list(map(
+            lambda x: x + uniform(-1, 1) * self.count_avg_loudness(),
+            bat['x']
+        ))
+        y = self.opt_fun(pos)
+        if y < bat['y'] and uniform(0, 1) < bat['A']:
+            bat['y'], bat['x'] = y, pos
+            bat['A'] = bat['A'] * self.mod_A
+            bat['r'] = bat['r'] * (1 - exp(-self.mod_r * self.t))
+
 
     def count_avg_loudness(self):
         return sum(bat['A'] for bat in self.bats) / len(self.bats)
+
+    def count_freq(self):
+        return self.f_range[0] + uniform(0, 1) * (self.f_range[1] - self.f_range[0])
 
     def evaluate(self, iterations=None, *args, **kwargs):
         return super().evaluate(self.step, iterations)
@@ -71,11 +86,9 @@ class BA(SO):
             'v': [0] * self.dimensions,
             # actual position of particle in dimension
             'x': [uniform(*self.opt_fun.x_range) for _ in range(self.dimensions)],
-            'A': 0.0,  # loudness
-            'r': 0.0  # pulse rate
+            'A': uniform(1, 2),  # loudness
+            'r': 0.5  # pulse rate
         } for _ in range(self.population)]
 
-        [self.rate_bat(bat) for bat in self.bats]
-
-        # global max
-        self.best_global = self.bats[0]['x']
+        # best bat
+        self.t = 0

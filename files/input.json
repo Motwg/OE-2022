@@ -5,7 +5,7 @@
         "save_csv_details": false,
         "save_csv_y_matrix": false,
         "activate_ga": false,
-        "hide_prints": false,
+        "hide_prints": true,
         "repeats": 2,
         "inputs": [
             "glpso_ex",
@@ -33,7 +33,11 @@
         "function": "f1",
         "population": 50,
         "dimension": 15,
-        "w_set": "a"
+        "parameters": {
+            "freq_range": [0.0, 2.0],
+            "mod_r": 0.8,
+            "mod_A": 0.9
+        }
     },
     "glpso_ex": {
         "function": "f1",
