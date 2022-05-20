@@ -23,10 +23,6 @@ class BA(SO):
         self.bounce = partial(bounce, x_range=self.opt_fun.x_range)
         self.f_range = kwargs.get('freq_range', (0, 2))
 
-        self.w_v = kwargs.get('w_v', 0.729)
-        self.w_l = kwargs.get('w_l', 1.494)
-        self.w_g = kwargs.get('w_g', 1.494)
-
         self.reset()
 
     def count_freq(self):
@@ -35,7 +31,6 @@ class BA(SO):
     def step(self) -> float:
 
         for bat in self.bats:
-            self.rate_bat(bat)
             # calculate vectors of velocity and position
             bat['v'] = list(map(
                 lambda v, x: v + self.count_freq() * (x - self.best_global),
