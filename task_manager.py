@@ -255,15 +255,17 @@ class TaskManager:
             'iterations': input_data.get('iterations', None)
         }
 
-        y, iterations = self.so_task(glpso, **evaluate_kwargs)
+        y, iterations, times = self.so_task(glpso, **evaluate_kwargs)
 
         # save to csv y and iterations
         if self.save_csv_details:
             variant = user_input.removeprefix('glpso_')
             write_csv(
                 f'{user_input}.csv',
-                (f'{variant}_solution', f'{variant}_iterations'),
-                zip(y, iterations)
+                (f'{user_input}_solution',
+                 f'{user_input}_iterations',
+                 f'{user_input}_runtime'),
+                zip(y, iterations, times)
             )
         # take only actual repeats (from the last input)
         cur_y_matrix = self.y_matrix[-self.repeats:]
