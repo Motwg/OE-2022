@@ -44,6 +44,30 @@ def fun_switcher(fun_id):
             'dimension_constraints': (2, 2),
             'x_range': (-100, 100),
             'accuracy': 0.00001
+        },
+        'f3': {
+            'fun': f3,
+            'dimension_constraints': (2, 100),
+            'x_range': (-100, 100),
+            'accuracy': 0.00001
+        },
+        'f17': {
+            'fun': f17,
+            'dimension_constraints': (2, 100),
+            'x_range': (-100, 100),
+            'accuracy': 0.00001
+        },
+        'f21': {
+            'fun': f21,
+            'dimension_constraints': (2, 100),
+            'x_range': (-100, 100),
+            'accuracy': 0.00001
+        },
+        'f24': {
+            'fun': f24,
+            'dimension_constraints': (2, 100),
+            'x_range': (-65, 65),
+            'accuracy': 0.00001
         }
     }.get(fun_id, 'f1')
 
@@ -99,6 +123,42 @@ def f12(vector_x):
     meter = math.pow(math.sin(math.sqrt(x1_2 + x2_2)), 2) - 0.5
     denominator = math.pow(1 + 0.001 * (x1_2 + x2_2), 2)
     return 0.5 + meter / denominator
+
+
+def f3(vector_x):
+    sum_value = 0
+    for i in range(len(vector_x)):
+        little_sum = 0
+        for j in range(i):
+            little_sum += vector_x[j]
+        sum_value += little_sum ** 2
+    return sum_value
+
+
+def f17(vector_x):
+    sum1 = 0
+    sum2 = 0
+    for i in range(len(vector_x)):
+        sum1 += (vector_x[i] - 1)**2
+        sum2 += vector_x[i]**2 - 1
+    return sum1 - sum2
+
+
+def f21(vector_x):
+    sum_val= 0
+    for i in range(len(vector_x)):
+        sum_val += vector_x[i]**2
+    return vector_x[1] + 10**6 * sum_val
+
+
+def f24(vector_x):
+    sum1 = 0
+    for i in range(len(vector_x)):
+        sum2 = 0
+        for j in range(len(vector_x)):
+            sum2 += vector_x[i]**2
+        sum1 += sum2
+    return sum1
 
 
 class OptimizationFunction:
