@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # pass input by choosing one from list
     else:
         [print(f'{k} : {v}') for k, v in data.items()
-         if k.startswith(('pso_', 'lcso_', 'cso_'))]
+         if k.startswith(('pso_', 'lcso_', 'cso_', 'glpso', 'ba'))]
         user_inputs = check_input(lambda x: x in data, 'Choose your input: ')
         inputs_data = [data[user_inputs]]
         user_inputs = [user_inputs]
