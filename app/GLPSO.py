@@ -59,10 +59,10 @@ class GLPSO(SO):
                 v = call_w(self.w_v) * pn['v'][d] \
                     + (call_w(self.w_l) + call_w(self.w_g)) / 2 * uniform(0, 1) \
                     * (self.exemplars[i]['x'][d] - pn['x'][d])
-                pn['v'][d] = v
+                pn['v'][d] = self.levy_or_not(v)
 
                 # Check for edge and change position
-                pn['x'][d] = bounce(pn['x'][d] + self.levy_or_not(v), self.opt_fun.x_range)
+                pn['x'][d] = bounce(pn['x'][d] + v, self.opt_fun.x_range)
 
             # Calculate new value
             f_value = self.opt_fun(pn['x'])

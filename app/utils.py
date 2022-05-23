@@ -1,12 +1,21 @@
+import random
 from functools import reduce
 from operator import concat
-from random import sample
+from random import sample, uniform
 from scipy.stats import levy
+from math import fabs
 
 
 def bounce(x, x_range):
-    # TODO: Make it bounce instead of gluing
-    return glue_to_wall(x, x_range)
+    if x > 0:
+        x = x % (2 * fabs(x_range[0] - x_range[1]))
+    elif x < 0:
+        x = (x % (-2 * fabs(x_range[0] - x_range[1])))
+    if x < x_range[0]:
+        return bounce(x_range[0] + fabs(x_range[0] - x), x_range)
+    elif x > x_range[1]:
+        return bounce(x_range[1] - fabs(x_range[1] - x), x_range)
+    return x
 
 
 def glue_to_wall(x, x_range):
@@ -33,4 +42,7 @@ def flatten(iterable):
 
 
 def levy_flight(x):
-    return x * levy.rvs()
+    if uniform(0, 1) > 0.98:
+        return x * levy.rvs()
+    else:
+        return x
