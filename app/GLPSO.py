@@ -2,7 +2,7 @@ from random import uniform, random
 import random
 
 from app.SO import SO
-from app.utils import bounce
+from app.utils import bounce, levy_flight
 
 
 def call_w(w):
@@ -14,7 +14,7 @@ def call_w(w):
 
 class GLPSO(SO):
 
-    def __init__(self, population, dimension, opt_function, pm, **kwargs):
+    def __init__(self, population, dimension, opt_function, pm, levy=False, **kwargs):
         super().__init__(population, dimension, opt_function)
 
         self.particles = {}
@@ -25,6 +25,8 @@ class GLPSO(SO):
         self.w_l = kwargs.get('w_l', 1.494)
         self.w_g = kwargs.get('w_g', 1.494)
         self.pm = pm
+
+        self.levy_or_not = lambda v: levy_flight(v) if levy else v
 
         self.reset()
 
@@ -48,7 +50,7 @@ class GLPSO(SO):
                 # Oblicz exemplar
             for d in range(self.dimensions):
                 self.exemplars[i]['x'][d] = self.calculate_exemplar(i, d)
-                # Selecja
+                # Selekcja
             if self.opt_fun(self.offsprings[i]['x']) < self.opt_fun(self.exemplars[i]['x']):
                 self.exemplars[i]['x'] = self.offsprings[i]['x']
                 # Update cząstek
@@ -60,7 +62,7 @@ class GLPSO(SO):
                 pn['v'][d] = v
 
                 # Check for edge and change position
-                pn['x'][d] = bounce(pn['x'][d] + v, self.opt_fun.x_range)
+                pn['x'][d] = bounce(pn['x'][d] + self.levy_or_not(v), self.opt_fun.x_range)
 
             # Calculate new value
             f_value = self.opt_fun(pn['x'])

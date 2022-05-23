@@ -33,6 +33,7 @@
         "function": "f1",
         "population": 50,
         "dimension": 15,
+        "levy": true,
         "parameters": {
             "freq_range": [0.0, 2.0],
             "mod_r": 0.8,
@@ -44,7 +45,8 @@
         "population": 50,
         "dimension": 15,
         "pm": 0.05,
-        "w_set": "a"
+        "w_set": "a",
+        "levy": true
     },
     "lcso_ex": {
         "function": "f1",
