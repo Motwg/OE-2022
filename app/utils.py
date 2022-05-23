@@ -1,6 +1,7 @@
-from random import sample
 from functools import reduce
 from operator import concat
+from random import sample
+from scipy.stats import levy
 
 
 def bounce(x, x_range):
@@ -29,3 +30,7 @@ def grouped(iterable, n):
 def flatten(iterable):
     """((s00, s01), (s10, s11), ...) -> (s00, s01, s10, s11, ...)"""
     return reduce(concat, iterable)
+
+
+def levy_flight(x):
+    return x * levy.rvs()

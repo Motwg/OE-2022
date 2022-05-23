@@ -253,6 +253,7 @@ class TaskManager:
             input_data['dimension'],
             opt_function,
             input_data['pm'],
+            levy=input_data.get('levy', False),
             **self.w_parameters[input_data['w_set']]
         )
 
@@ -289,6 +290,7 @@ class TaskManager:
             input_data['population'],
             input_data['dimension'],
             opt_function,
+            levy=input_data.get('levy', False),
             **input_data.get('parameters', None)
         )
 

@@ -3,19 +3,12 @@ from random import uniform
 from cmath import exp
 
 from app.SO import SO
-from app.utils import bounce
-
-
-def call_w(w):
-    """if 'w' looks like [*args] call uniform with args"""
-    if isinstance(w, (tuple, list)):
-        return uniform(*w)
-    return w
+from app.utils import bounce, levy_flight
 
 
 class BA(SO):
 
-    def __init__(self, population, dimension, opt_function, **kwargs):
+    def __init__(self, population, dimension, opt_function, levy=False, **kwargs):
         super().__init__(population, dimension, opt_function)
 
         self.bats = {}
@@ -23,6 +16,8 @@ class BA(SO):
 
         # feed bounce function with constant x_range to speed up computing
         self.bounce = partial(bounce, x_range=self.opt_fun.x_range)
+        self.levy_or_not = lambda v: levy_flight(v) if levy else v
+
         self.f_range = kwargs.get('freq_range', (0, 2))
 
         self.mod_r = kwargs.get('mod_r', 0.8)  # pulse rate modifier | mod_r > 0
@@ -41,7 +36,7 @@ class BA(SO):
                 bat['v'], bat['x']
             ))
             bat['x'] = list(map(
-                lambda v, x: self.bounce(x + v),
+                lambda v, x: self.bounce(x + self.levy_or_not(v)),
                 bat['v'], bat['x']
             ))
 
@@ -55,7 +50,7 @@ class BA(SO):
     def rate_bat(self, bat: dict):
         bat['y'] = self.opt_fun(bat['x'])
         if bat['y'] < self.y:
-            self.y = bat['y']
+            self.y = bat['y'].copy()
             self.best_global = bat
 
     def echolocation(self, bat: dict):
@@ -68,7 +63,6 @@ class BA(SO):
             bat['y'], bat['x'] = y, pos
             bat['A'] = bat['A'] * self.mod_A
             bat['r'] = bat['r'] * (1 - exp(-self.mod_r * self.t))
-
 
     def count_avg_loudness(self):
         return sum(bat['A'] for bat in self.bats) / len(self.bats)
